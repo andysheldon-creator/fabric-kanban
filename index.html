@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Platform - Kanban Board</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header .subtitle { opacity: 0.9; font-size: 14px; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #1a1a1a;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .stat-card .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 6px;
+        }
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        .filters {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .filter-group label {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        select {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            border: 1px solid #333;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .column {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #333;
+        }
+        .column-header {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #dc2626;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .column-count {
+            background: #dc2626;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.1s;
+        }
+        .card:hover {
+            border-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        .card-id {
+            font-size: 11px;
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .card-desc {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        .card-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .badge.critical { background: #dc2626; color: white; }
+        .badge.high { background: #f97316; color: white; }
+        .badge.medium { background: #eab308; color: black; }
+        .badge.low { background: #6b7280; color: white; }
+        .estimate {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Fabric Academy Platform - Kanban</h1>
+        <div class="subtitle">Marketing coaching & training platform | 25 features | 676 hours</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="label">Total Features</div>
+            <div class="value">25</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Estimated Hours</div>
+            <div class="value">676</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Critical</div>
+            <div class="value">1</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">High Priority</div>
+            <div class="value">10</div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <div class="filter-group">
+            <label>Priority:</label>
+            <select id="filter-priority" onchange="renderBoard()">
+                <option value="">All</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Category:</label>
+            <select id="filter-category" onchange="renderBoard()">
+                <option value="">All</option>
+                <option value="core">Core</option>
+                <option value="coaching">Coaching</option>
+                <option value="learning">Learning</option>
+                <option value="content">Content</option>
+                <option value="analytics">Analytics</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="board" id="kanban-board"></div>
+
+    <script>
+const kanbanData = {"project":"fabric-platform","name":"Fabric Academy Platform","description":"Marketing coaching and training platform with personalized learning journeys","created":"2026-02-01","columns":["backlog","todo","in-progress","review","done"],"features":[{"id":"F001","title":"User Authentication & Registration","description":"Multi-role auth system (learner, coach, admin, company admin)","priority":"critical","status":"backlog","category":"core","estimate_hours":24,"tags":["auth","backend","security"]},{"id":"F002","title":"Skills & Behavioral Assessment Tool","description":"Interactive assessment to identify strengths, gaps, and growth opportunities across skills and mindset","priority":"high","status":"backlog","category":"assessment","estimate_hours":40,"tags":["assessment","frontend","data-capture"]},{"id":"F003","title":"Personalized Learning Pathway Builder","description":"Algorithm to generate customized development journeys based on assessment results","priority":"high","status":"backlog","category":"learning","estimate_hours":48,"tags":["ai","recommendation-engine","backend"]},{"id":"F004","title":"1-1 Coaching Booking System","description":"Calendar integration, coach matching, session scheduling, video conferencing links","priority":"high","status":"backlog","category":"coaching","estimate_hours":32,"tags":["calendar","scheduling","integration"]},{"id":"F005","title":"Group Coaching Session Management","description":"Create and manage group coaching sessions, attendee tracking, recordings","priority":"medium","status":"backlog","category":"coaching","estimate_hours":28,"tags":["group-sessions","video","backend"]},{"id":"F006","title":"On-Demand Learning Library","description":"Video library, course catalog, content categorization, search and filter","priority":"high","status":"backlog","category":"content","estimate_hours":36,"tags":["video","cms","search"]},{"id":"F007","title":"Coach Profile & Matching System","description":"Coach profiles (CMOs, Heads of Brand, etc.), expertise tags, automated matching based on learner needs","priority":"high","status":"backlog","category":"coaching","estimate_hours":24,"tags":["profiles","matching-algorithm","backend"]},{"id":"F008","title":"Progress Tracking Dashboard (Learner)","description":"Real-time progress across skills, confidence, behavior. Visual progress indicators","priority":"high","status":"backlog","category":"analytics","estimate_hours":32,"tags":["dashboard","charts","frontend"]},{"id":"F009","title":"Admin Reporting & Insights Dashboard","description":"Quarterly L&D insights, impact reports, team performance metrics for company admins","priority":"medium","status":"backlog","category":"analytics","estimate_hours":40,"tags":["reporting","analytics","export"]},{"id":"F010","title":"Live Programme/Workshop Management","description":"Schedule live training programmes, registration, attendance tracking, post-session materials","priority":"medium","status":"backlog","category":"learning","estimate_hours":28,"tags":["events","workshops","backend"]},{"id":"F011","title":"Notification & Reminder System","description":"Email/SMS reminders for sessions, new content alerts, progress milestones","priority":"medium","status":"backlog","category":"engagement","estimate_hours":16,"tags":["notifications","email","engagement"]},{"id":"F012","title":"Content Delivery & Streaming","description":"Video hosting, adaptive streaming, transcript generation, playback tracking","priority":"high","status":"backlog","category":"content","estimate_hours":32,"tags":["video","cdn","streaming"]},{"id":"F013","title":"Session Notes & Action Items","description":"Coaches and learners can add notes, action items, goals after sessions","priority":"medium","status":"backlog","category":"coaching","estimate_hours":20,"tags":["notes","collaboration","frontend"]},{"id":"F014","title":"Feedback & Rating System","description":"Learners rate sessions, provide feedback on coaches and content quality","priority":"low","status":"backlog","category":"quality","estimate_hours":16,"tags":["feedback","ratings","ux"]},{"id":"F015","title":"Payment & Subscription Management","description":"Stripe integration, tiered pricing, company billing, invoice generation","priority":"high","status":"backlog","category":"monetization","estimate_hours":32,"tags":["payments","stripe","billing"]},{"id":"F016","title":"Mobile Responsive Design","description":"Fully responsive UI for learners on-the-go","priority":"high","status":"backlog","category":"ux","estimate_hours":40,"tags":["responsive","mobile","frontend"]},{"id":"F017","title":"Marketing Landing Pages","description":"Public-facing pages: homepage, demo booking, pricing, coach profiles, testimonials","priority":"medium","status":"backlog","category":"marketing","estimate_hours":24,"tags":["landing-pages","seo","frontend"]},{"id":"F018","title":"Demo Booking Flow","description":"Calendly-style demo scheduling for prospective clients","priority":"medium","status":"backlog","category":"sales","estimate_hours":12,"tags":["scheduling","sales","integration"]},{"id":"F019","title":"Team Management (Company Admin)","description":"Add/remove learners, assign coaches, view team progress, manage licenses","priority":"medium","status":"backlog","category":"admin","estimate_hours":28,"tags":["team-management","admin","backend"]},{"id":"F020","title":"Coach Availability Calendar","description":"Coaches set their availability, blocked times, recurring schedules","priority":"medium","status":"backlog","category":"coaching","estimate_hours":20,"tags":["calendar","scheduling","backend"]},{"id":"F021","title":"Email Campaign Integration","description":"Newsletter signup, drip campaigns for engagement, HubSpot integration","priority":"low","status":"backlog","category":"marketing","estimate_hours":16,"tags":["email","marketing-automation","integration"]},{"id":"F022","title":"Resource Library (PDFs, Templates)","description":"Downloadable resources, templates, worksheets for learners","priority":"low","status":"backlog","category":"content","estimate_hours":12,"tags":["resources","downloads","cms"]},{"id":"F023","title":"Automated Progress Reports","description":"Auto-generate quarterly reports, send to company admins, export as PDF","priority":"medium","status":"backlog","category":"analytics","estimate_hours":24,"tags":["automation","reporting","pdf"]},{"id":"F024","title":"API for Third-Party Integrations","description":"RESTful API for integrations with HRIS, LMS, CRM systems","priority":"low","status":"backlog","category":"integration","estimate_hours":32,"tags":["api","integration","backend"]},{"id":"F025","title":"Search & Discovery","description":"Global search across content, coaches, resources with smart filters","priority":"medium","status":"backlog","category":"ux","estimate_hours":20,"tags":["search","elasticsearch","frontend"]}],"summary":{"total_features":25,"total_estimated_hours":676,"by_priority":{"critical":1,"high":10,"medium":11,"low":3},"by_category":{"core":1,"assessment":1,"learning":2,"coaching":5,"content":3,"analytics":3,"engagement":1,"quality":1,"monetization":1,"ux":2,"marketing":2,"sales":1,"admin":1,"integration":2}}};
+
+function renderBoard() {
+    const priorityFilter = document.getElementById('filter-priority').value;
+    const categoryFilter = document.getElementById('filter-category').value;
+    const board = document.getElementById('kanban-board');
+    board.innerHTML = '';
+
+    const columns = kanbanData.columns;
+    
+    columns.forEach(columnName => {
+        const columnFeatures = kanbanData.features.filter(f => {
+            let match = f.status === columnName;
+            if (priorityFilter) match = match && f.priority === priorityFilter;
+            if (categoryFilter) match = match && f.category === categoryFilter;
+            return match;
+        });
+
+        const columnDiv = document.createElement('div');
+        columnDiv.className = 'column';
+        columnDiv.innerHTML = `
+            <div class="column-header">
+                <span>${columnName.replace('-', ' ').toUpperCase()}</span>
+                <span class="column-count">${columnFeatures.length}</span>
+            </div>
+        `;
+
+        columnFeatures.forEach(feature => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-id">${feature.id}</div>
+                <div class="card-title">${feature.title}</div>
+                <div class="card-desc">${feature.description}</div>
+                <div class="card-meta">
+                    <span class="badge ${feature.priority}">${feature.priority}</span>
+                    <span class="estimate">${feature.estimate_hours}h</span>
+                </div>
+            `;
+            columnDiv.appendChild(card);
+        });
+
+        board.appendChild(columnDiv);
+    });
+}
+
+renderBoard();
+    </script>
+</body>
+</html>
